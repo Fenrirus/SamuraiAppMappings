@@ -7,6 +7,7 @@ namespace SamuraiAppMappings.Domain
         public Samurai()
         {
             Quotes = new List<Quote>();
+            SamuraiBattles = new List<SamuraiBattle>();
         }
 
         public int Id { get; set; }

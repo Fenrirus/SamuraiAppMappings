@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using SamuraiAppMappings.Domain;
+using System;
 
 namespace SamuraiAppMappings.Data
 {
@@ -12,7 +14,10 @@ namespace SamuraiAppMappings.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(
-                 "Server = (localdb)\\mssqllocaldb; Database = SamuraiApp2Data; Trusted_Connection = True; ");
+                 "Server = (localdb)\\mssqllocaldb; Database = SamuraiApp2Data; Trusted_Connection = True; ")
+                .LogTo(Console.WriteLine, new[] { DbLoggerCategory.Database.Command.Name },
+                LogLevel.Information)
+                .EnableSensitiveDataLogging();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -20,7 +25,9 @@ namespace SamuraiAppMappings.Data
             modelBuilder.Entity<SamuraiBattle>()
                 .HasKey(s => new { s.SamuraiId, s.BattleId });
 
-            // base.OnModelCreating(modelBuilder);
+            //modelBuilder.Entity<Samurai>()
+            //    .HasOne(s => s.SecretIdentity)
+            //    .WithOne(i => i.Samurai).HasForeignKey<SecretIdentity>("SamuraiId");
         }
     }
 }
