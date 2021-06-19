@@ -38,6 +38,27 @@ namespace SamuraiAppMappings
             _context.SaveChanges();
         }
 
+        private static void CreateThenEditSamuraiWithQuote()
+        {
+            var samurai = new Samurai { Name = "Ronin" };
+            var quote = new Quote { Text = "Aren't I MARVELous?" };
+            samurai.Quotes.Add(quote);
+            _context.Samurais.Add(samurai);
+            _context.SaveChanges();
+            quote.Text += " See what I did there?";
+            _context.SaveChanges();
+        }
+
+        private static void CreteaSamurai()
+        {
+            var samurai = new Samurai() { Name = "Marta" };
+            _context.Samurais.Add(samurai);
+            var time = DateTime.Now;
+            _context.Entry(samurai).Property("Created").CurrentValue = time;
+            _context.Entry(samurai).Property("LastModified").CurrentValue = time;
+            _context.SaveChanges();
+        }
+
         private static void EditASecretIdentity()
         {
             var samurai = _context.Samurais.Include(s => s.SecretIdentity)
@@ -101,7 +122,10 @@ namespace SamuraiAppMappings
             //AddSecretIdentitBySamuraiId();
             //AddSecretIdentitBySamuraiIdUntracked();
             //ReplaceASecretIdentity();
-            ReplaceSecretIdentityNotInMemory();
+            //ReplaceSecretIdentityNotInMemory();
+            //CreteaSamurai();
+            CreateThenEditSamuraiWithQuote();
+            SamuraiCretedLastWeek();
         }
 
         private static void PrePopulateSamuraisAndBattles()
@@ -181,6 +205,13 @@ namespace SamuraiAppMappings
             samurai.SecretIdentity = new SecretIdentity { RealName = "Bobbie Draper" };
             //error
             _context.SaveChanges();
+        }
+
+        private static void SamuraiCretedLastWeek()
+        {
+            var oneWeekAgo = DateTime.Now.AddDays(-7);
+
+            var samurai = _context.Samurais.Where(s => EF.Property<DateTime>(s, "Created") >= oneWeekAgo).Select(s => new { s.Id, s.Name, Created = EF.Property<DateTime>(s, "Created") }).ToList();
         }
     }
 }
