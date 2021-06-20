@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace SamuraiAppMappings.Domain
 {
@@ -10,6 +11,7 @@ namespace SamuraiAppMappings.Domain
             SamuraiBattles = new List<SamuraiBattle>();
         }
 
+        public PersonFullName BetterName { get; set; }
         public int Id { get; set; }
         public string Name { get; set; }
         public List<Quote> Quotes { get; set; }

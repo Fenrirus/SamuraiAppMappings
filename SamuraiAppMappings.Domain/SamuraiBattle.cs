@@ -1,4 +1,6 @@
-﻿namespace SamuraiAppMappings.Domain
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace SamuraiAppMappings.Domain
 {
     public class SamuraiBattle
     {

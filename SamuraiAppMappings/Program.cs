@@ -11,6 +11,13 @@ namespace SamuraiAppMappings
     {
         private static SamuraiContext _context = new SamuraiContext();
 
+        private static void AddSamuraiWithBetterName()
+        {
+            var samurai = new Samurai() { BetterName = new PersonFullName("Rob", "K"), Name = "Rob K" };
+            _context.Add(samurai);
+            _context.SaveChanges();
+        }
+
         private static void AddSamuraiWithSectertIdentity()
         {
             var samurai = new Samurai { Name = "RobertSan" };
@@ -87,6 +94,11 @@ namespace SamuraiAppMappings
             _context.SaveChanges();
         }
 
+        private static void GetAllSamurai()
+        {
+            var samurais = _context.Samurais.ToList();
+        }
+
         private static void GetSamuraiWithBattles()
         {
             var samuraiWithBattles = _context.Samurais
@@ -124,8 +136,12 @@ namespace SamuraiAppMappings
             //ReplaceASecretIdentity();
             //ReplaceSecretIdentityNotInMemory();
             //CreteaSamurai();
-            CreateThenEditSamuraiWithQuote();
-            SamuraiCretedLastWeek();
+            //CreateThenEditSamuraiWithQuote();
+            //SamuraiCretedLastWeek();
+            //AddSamuraiWithBetterName();
+            //UpdateBetterName();
+            ReplaceBetterName();
+            GetAllSamurai();
         }
 
         private static void PrePopulateSamuraisAndBattles()
@@ -199,6 +215,13 @@ namespace SamuraiAppMappings
             _context.SaveChanges();
         }
 
+        private static void ReplaceBetterName()
+        {
+            var samurai = _context.Samurais.FirstOrDefault();
+            samurai.BetterName = new PersonFullName("Grom", "Hellscream");
+            _context.SaveChanges();
+        }
+
         private static void ReplaceSecretIdentityNotInMemory()
         {
             var samurai = _context.Samurais.FirstOrDefault(s => s.SecretIdentity != null);
@@ -212,6 +235,13 @@ namespace SamuraiAppMappings
             var oneWeekAgo = DateTime.Now.AddDays(-7);
 
             var samurai = _context.Samurais.Where(s => EF.Property<DateTime>(s, "Created") >= oneWeekAgo).Select(s => new { s.Id, s.Name, Created = EF.Property<DateTime>(s, "Created") }).ToList();
+        }
+
+        private static void UpdateBetterName()
+        {
+            var samurai = _context.Samurais.FirstOrDefault(f => f.BetterName.SurName == "K");
+            //samurai.BetterName.SurName = "Kru";
+            _context.SaveChanges();
         }
     }
 }
