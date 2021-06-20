@@ -12,6 +12,18 @@ namespace SamuraiAppMappings.Data
         public DbSet<Quote> Quotes { get; set; }
         public DbSet<Samurai> Samurais { get; set; }
 
+        [DbFunction]
+        public static int DaysInBattle(DateTime start, DateTime end)
+        {
+            return (int)end.Subtract(start).TotalDays + 1;
+        }
+
+        [DbFunction]
+        public static string EarliestBattleFoughtBySamurai(int samuraiId)
+        {
+            throw new Exception();
+        }
+
         public override int SaveChanges()
         {
             ChangeTracker.DetectChanges();

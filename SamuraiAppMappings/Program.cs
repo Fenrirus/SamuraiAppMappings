@@ -66,6 +66,11 @@ namespace SamuraiAppMappings
             _context.SaveChanges();
         }
 
+        private static int DateDiffDaysPlusOne(DateTime start, DateTime end)
+        {
+            return (int)end.Subtract(start).TotalDays + 1;
+        }
+
         private static void EditASecretIdentity()
         {
             var samurai = _context.Samurais.Include(s => s.SecretIdentity)
@@ -140,8 +145,13 @@ namespace SamuraiAppMappings
             //SamuraiCretedLastWeek();
             //AddSamuraiWithBetterName();
             //UpdateBetterName();
-            ReplaceBetterName();
-            GetAllSamurai();
+            //ReplaceBetterName();
+            //GetAllSamurai();
+            //RetrieveScalarResult();
+            //SortWithoutReturningScalar();
+            RetrieveBattleDays();
+            RetrieveBattleDaysWithoutDbFunction();
+            RetrieveBattleYears();
         }
 
         private static void PrePopulateSamuraisAndBattles()
@@ -230,6 +240,32 @@ namespace SamuraiAppMappings
             _context.SaveChanges();
         }
 
+        private static void RetrieveBattleDays()
+        {
+            var battles = _context.Battles.Select(b => new { b.Name, Days = SamuraiContext.DaysInBattle(b.StartDate, b.EndDate) }).ToList();
+        }
+
+        private static void RetrieveBattleDaysWithoutDbFunction()
+        {
+            var battles = _context.Battles.Select(
+                b => new
+                {
+                    b.Name,
+                    Days = DateDiffDaysPlusOne(b.StartDate, b.EndDate)
+                }
+                ).ToList();
+        }
+
+        private static void RetrieveBattleYears()
+        {
+            var battles = _context.Battles.Select(b => new { b.Name, startYear = b.StartDate.Year }).ToList();
+        }
+
+        private static void RetrieveScalarResult()
+        {
+            var samurai = _context.Samurais.Where(s => EF.Functions.Like(SamuraiContext.EarliestBattleFoughtBySamurai(s.Id), "%Battle%")).Select(s => new { s.Name, ErliestBattle = SamuraiContext.EarliestBattleFoughtBySamurai(s.Id) }).ToList();
+        }
+
         private static void SamuraiCretedLastWeek()
         {
             var oneWeekAgo = DateTime.Now.AddDays(-7);
@@ -237,11 +273,19 @@ namespace SamuraiAppMappings
             var samurai = _context.Samurais.Where(s => EF.Property<DateTime>(s, "Created") >= oneWeekAgo).Select(s => new { s.Id, s.Name, Created = EF.Property<DateTime>(s, "Created") }).ToList();
         }
 
+        private static void SortWithoutReturningScalar()
+        {
+            var samurais = _context.Samurais
+                 .OrderBy(s => SamuraiContext.EarliestBattleFoughtBySamurai(s.Id))
+                 .ToList();
+        }
+
         private static void UpdateBetterName()
         {
-            var samurai = _context.Samurais.FirstOrDefault(f => f.BetterName.SurName == "K");
+            // to nie zadziała w przypadku zmiany na value object
+            //var samurai = _context.Samurais.FirstOrDefault(f => f.BetterName.SurName == "K");
             //samurai.BetterName.SurName = "Kru";
-            _context.SaveChanges();
+            //_context.SaveChanges();
         }
     }
 }
